@@ -1,10 +1,13 @@
+const path = require("path");
 // import external modules
 const express = require('express'); 
 const bodyParser = require('body-parser');
 
 // import local modules as well as custom modules and also files
 const reqestHandler = require('./user');
-
+const homeRouter = require('./routes/homeRouter');
+const contactUsRouter = require('./routes/contactUsRouter');
+const submitDataRouter = require('./routes/submitDataRouter');
 const app = express();
 
 app.use("/", (req, res, next) => {
@@ -15,33 +18,21 @@ app.use("/", (req, res, next) => {
     // after sending response, implicitly call response.end()
 });
 
-app.get("/contact-us",(req, res, next) => {
-  console.log("Came in third middleware ", req.url, req.method);
-  res.send(`<h1>Hello from Express Server</h1>
-    <form action="/submit-detail" method="POST">
-    <input type="text" name="username" placeholder="Enter your name " />
-    <label for='male'>Male</label>
-    <input type="radio" id="male" name="gender" value="male" /> 
-    <label for='female'>Female</label>
-    <input type="radio" name="gender" value="female" />
-    <button>Submit</button>
-    </form>
-    `);
-});
-app.use(bodyParser.urlencoded());
-app.post("/submit-detail", (req, res, next) => {
-  console.log("First handling ", req.url, req.method, req.body);
-  next();
-})
 
-app.post("/submit-detail", (req, res, next) => {
-  console.log("Came in fourth middleware ", req.url, req.method, req.body);
-  res.send("Data submitted successfully");
-})
-app.use("/", (req, res, next) => {
-  console.log("Came in second middleware ", req.url, req.method);
-  res.send("<a href='/contact-us'>Contact Us</a>");
+// parsing the incoming request body
+app.use(bodyParser.urlencoded());
+app.use(homeRouter);
+app.use(contactUsRouter);
+app.use(submitDataRouter);
+
+// Global error handling middleware
+// Granting access to the static files like css, js, images etc. to the client
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
+
 
 
 const PORT = 3000;

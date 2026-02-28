@@ -1,5 +1,9 @@
 const express = require('express');
 // import local modules as well as custom modules and also files
+
+// Local imports
+const rootDir = require('../utils/pathUtils')
+
 const userDataRouter = express.Router();
 userDataRouter.post("/add-home", (req, res, next) => {
   console.log("Data submitted ", req.url, req.method, req.body);
