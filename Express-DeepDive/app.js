@@ -18,7 +18,6 @@ app.use("/", (req, res, next) => {
     // after sending response, implicitly call response.end()
 });
 
-
 // parsing the incoming request body
 app.use(bodyParser.urlencoded());
 app.use(homeRouter);
