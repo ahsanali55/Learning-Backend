@@ -10,7 +10,7 @@ const { registerHomes } = require("./hostRouter");
 const rootDir = require("../utils/pathUtil");
 
 userRouter.get("/", (req, res, next) => {
-  console.log(registerHomes)
+  console.log("Registered Array Homes", registerHomes)
   res.render("home", { registerHomes: registerHomes, pageTitle: 'airbnb Home' });
 });
 

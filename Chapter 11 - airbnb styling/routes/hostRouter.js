@@ -16,10 +16,10 @@ hostRouter.get("/add-home", (req, res, next) => {
 
 const registerHomes = [];
 hostRouter.post("/add-home", (req, res, next) => {
-  console.log("Home Registration successfull for: ", req.body, req.body.houseName);
-  registerHomes.push({houseName:req.body.houseName});
-  res.render('homeAdded', { pageTitle: 'Home Added'});
+  console.log("Home Registration successfull for: ", req.body);
+  registerHomes.push(req.body );
   console.log("The homes are: ", registerHomes);
+  res.render('homeAdded', { pageTitle: 'Home Added'});
 });
 exports.hostRouter = hostRouter;
 exports.registerHomes = registerHomes;
