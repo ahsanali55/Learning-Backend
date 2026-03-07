@@ -1,5 +1,9 @@
-// fake database
-const registeredHomes = [];
+const fs = require('fs');
+const path = require('path');
+
+const rootDir = require("../utils/pathUtil");
+const { register } = require('module');
+
 module.exports = class Home {
   constructor(houseName, price, location, rating, photoUrl) {
     this.houseName = houseName;
@@ -9,10 +13,20 @@ module.exports = class Home {
     this.photoUrl = photoUrl;
   }
   save(){
-    registeredHomes.push(this);
+    Home.fetchAll((registerHomes) => {
+      registerHomes.push(this);
+      const homeDataPath = path.join(rootDir, "data", "home.json");
+      fs.writeFile(homeDataPath, JSON.stringify(registerHomes), (err) => {
+        console.log("File Writting Conluded: ", err);
+      })
+    })
   }
-  static fetchAll(){
-    return registeredHomes;
+  static fetchAll(callback){
+    const homeDataPath = path.join(rootDir, "data", "home.json");
+    
+     fs.readFile(homeDataPath, (err, data) => {
+      callback(!err ? JSON.parse(data) : []);
+    });
   }
 
 }

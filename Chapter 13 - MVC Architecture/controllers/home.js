@@ -13,8 +13,10 @@ exports.getHomeAdded = (req, res, next) => {
 }
 
 exports.getHomes = (req, res, next) => {
-  const registeredHomes = Home.fetchAll();
+  const registeredHomes = Home.fetchAll((registeredHomes) => {
+     res.render('home', {registeredHomes: registeredHomes, pageTitle: 'airbnb Home'});
+  });
   console.log(registeredHomes);
 
-  res.render('home', {registeredHomes: registeredHomes, pageTitle: 'airbnb Home'});
+ 
 }
