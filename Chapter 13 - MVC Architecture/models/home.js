@@ -12,21 +12,24 @@ module.exports = class Home {
     this.rating = rating;
     this.photoUrl = photoUrl;
   }
+
+  static fetchAll(callback){
+    const homeDataPath = path.join(rootDir, "data", "home.json");
+    
+    fs.readFile(homeDataPath, (err, data) => {
+      callback(!err ? JSON.parse(data) : []);
+    });
+  }
+
   save(){
     Home.fetchAll((registerHomes) => {
       registerHomes.push(this);
       const homeDataPath = path.join(rootDir, "data", "home.json");
-      fs.writeFile(homeDataPath, JSON.stringify(registerHomes), (err) => {
-        console.log("File Writting Conluded: ", err);
+      fs.writeFile(homeDataPath, JSON.stringify(registerHomes, null, 2), (err) => {
+        if (err) console.log("File Writing Error: ", err);
+        else console.log("File Writing Concluded Successfully");
       })
     })
-  }
-  static fetchAll(callback){
-    const homeDataPath = path.join(rootDir, "data", "home.json");
-    
-     fs.readFile(homeDataPath, (err, data) => {
-      callback(!err ? JSON.parse(data) : []);
-    });
   }
 
 }

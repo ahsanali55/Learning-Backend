@@ -6,7 +6,7 @@ exports.getIndex = (req, res, next) => {
       registeredHomes: registeredHomes,
       pageTitle: "airbnb Home",
       currentPage: "index",
-    })
+    }),
   );
 };
 
@@ -16,15 +16,33 @@ exports.getHomes = (req, res, next) => {
       registeredHomes: registeredHomes,
       pageTitle: "Homes List",
       currentPage: "Home",
-    })
+    }),
   );
+};
+
+exports.getHomesDetails = (req, res, next) => {
+  const homeId = req.params.homeId;
+  console.log("At home Page details ", homeId);
+  Home.findById(homeId, (home) => {
+    console.log("Home detail found ", home);
+    if (!home) {
+      console.log("Home not found");
+      res.redirect("/homes");
+    } else {
+      res.render("store/home-detail", {
+        home: home,
+        pageTitle: "Home Detail",
+        currentPage: "Home",
+      });
+    }
+  });
 };
 
 exports.getBookings = (req, res, next) => {
   res.render("store/bookings", {
     pageTitle: "My Bookings",
     currentPage: "bookings",
-  })
+  });
 };
 
 exports.getFavouriteList = (req, res, next) => {
@@ -33,6 +51,11 @@ exports.getFavouriteList = (req, res, next) => {
       registeredHomes: registeredHomes,
       pageTitle: "My Favourites",
       currentPage: "favourites",
-    })
+    }),
   );
 };
+
+exports.postAddToFavouriteList = (req, res, next) => {
+  console.log("Came aadd to favourite ",req.body, req.method);
+  res.redirect('/favourites')
+}
