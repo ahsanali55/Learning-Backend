@@ -6,6 +6,7 @@ exports.getAddHome = (req, res, next) => {
     pageTitle: "Add Home to airbnb",
     currentPage: "addHome",
     editing: false,
+    isLoggedIn: req.isLoggedIn,
   });
 };
 
@@ -25,6 +26,7 @@ exports.getEditHome = (req, res, next) => {
       pageTitle: "Edit your Home",
       currentPage: "host-homes",
       editing: editing,
+      isLoggedIn: req.isLoggedIn,
     });
   });
 };
@@ -35,6 +37,7 @@ exports.getHostHomes = (req, res, next) => {
       registeredHomes: registeredHomes,
       pageTitle: "Host Homes List",
       currentPage: "host-homes",
+      isLoggedIn: req.isLoggedIn,
     });
   });
 };
@@ -61,25 +64,29 @@ exports.postAddHome = (req, res, next) => {
 exports.postEditHome = (req, res, next) => {
   const { id, houseName, price, location, rating, photoUrl, description } =
     req.body;
-  Home.findById(id).then((home) => {
-    home.houseName = houseName;
-    home.price = price;
-    home.location = location;
-    home.rating = rating;
-    home.photoUrl = photoUrl;
-    home.description = description;
-    home.save().then((result) => {
-        console.log("Update Result Post Edit Home: ", result);
-      })
-      .catch((err) => {
-        console.log("Error while updating ", err);
-      })
-      .finally(() => {
-        res.redirect("/host/host-home-list");
-      });
-  }).catch(err => {
-    console.log("Error after may not finding the home ", err);
-  });
+  Home.findById(id)
+    .then((home) => {
+      home.houseName = houseName;
+      home.price = price;
+      home.location = location;
+      home.rating = rating;
+      home.photoUrl = photoUrl;
+      home.description = description;
+      home
+        .save()
+        .then((result) => {
+          console.log("Update Result Post Edit Home: ", result);
+        })
+        .catch((err) => {
+          console.log("Error while updating ", err);
+        })
+        .finally(() => {
+          res.redirect("/host/host-home-list");
+        });
+    })
+    .catch((err) => {
+      console.log("Error after may not finding the home ", err);
+    });
 };
 
 exports.postDeleteHome = (req, res, next) => {
