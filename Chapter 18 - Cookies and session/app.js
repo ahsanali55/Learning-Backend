@@ -3,6 +3,7 @@ const path = require("path");
 
 // External Module
 const express = require("express");
+const session = require("express-session");
 
 //Local Module
 const storeRouter = require("./routes/storeRouter");
@@ -18,7 +19,19 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(express.urlencoded());
+app.use((req, res, next) => {
+  console.log("Cookie that comes from middleware ", req.get('Cookie'));
+  req.isLoggedIn = req.get("Cookie")?.split('=')[1] == 'true' || false;
+  next();
+})
 app.use(storeRouter);
+app.use("/host", (req, res, next) => {
+  if (req.isLoggedIn) {
+    next();
+  } else {
+    res.redirect("/login");
+  }
+});
 app.use("/host", hostRouter);
 app.use(authRouter);
 
@@ -28,13 +41,17 @@ app.use(errorsController.pageNotFound);
 
 const PORT = 3000;
 
-const DB_PATH =  "mongodb://ahsanalijawad599:ahsan599@ac-kfoohql-shard-00-00.sh1jstp.mongodb.net:27017,ac-kfoohql-shard-00-01.sh1jstp.mongodb.net:27017,ac-kfoohql-shard-00-02.sh1jstp.mongodb.net:27017/airbnb?ssl=true&replicaSet=atlas-el19js-shard-0&authSource=admin&appName=Ahsan-Ali"
+const DB_PATH =
+  "mongodb://ahsanalijawad599:ahsan599@ac-kfoohql-shard-00-00.sh1jstp.mongodb.net:27017,ac-kfoohql-shard-00-01.sh1jstp.mongodb.net:27017,ac-kfoohql-shard-00-02.sh1jstp.mongodb.net:27017/airbnb?ssl=true&replicaSet=atlas-el19js-shard-0&authSource=admin&appName=Ahsan-Ali";
 
-mongoose.connect(DB_PATH).then(() => {
-  console.log("Connected to Mongodb");
-  app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
+mongoose
+  .connect(DB_PATH)
+  .then(() => {
+    console.log("Connected to Mongodb");
+    app.listen(PORT, () => {
+      console.log(`Server running on address http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Error while connecting to mongodb ", err);
   });
-}).catch(err => {
-  console.log("Error while connecting to mongodb ", err);
-})
