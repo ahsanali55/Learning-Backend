@@ -1,22 +1,32 @@
 exports.getLogin = (req, res, next) => {
   console.log("Get Login page request ");
-  res.render("auth/edit-home", {
+  res.render("auth/login", {
     pageTitle: "Login",
     currentPage: "login",
-    isLoggedIn: false
+    isLoggedIn: false,
   });
 };
 
 exports.postLogin = (req, res, next) => {
-  console.log("Post Login page request ", req.body);
-  // res.cookie("isLoggedIn", true);
   req.session.isLoggedIn = true;
   res.redirect("/");
-}
+};
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy(() => {
-    res.redirect('/login')
-  })
+    res.redirect("/login");
+  });
+};
 
-}
+exports.getSignUp = (req, res, next) => {
+  res.render("auth/signup", {
+    pageTitle: "SignUp",
+    currentPage: "signup",
+    isLoggedIn: false,
+  });
+};
+
+exports.postSignUp = (req, res, next) => {
+  console.log("Post signup request getting ", req.body);
+  res.redirect('/login')
+};
