@@ -1,4 +1,3 @@
-const home = require("../models/home");
 const Home = require("../models/home");
 
 exports.getAddHome = (req, res, next) => {
@@ -6,7 +5,8 @@ exports.getAddHome = (req, res, next) => {
     pageTitle: "Add Home to airbnb",
     currentPage: "addHome",
     editing: false,
-    isLoggedIn: req.session.isLoggedIn,
+    isLoggedIn: req.isLoggedIn, 
+    user: req.session.user,
   });
 };
 
@@ -26,7 +26,8 @@ exports.getEditHome = (req, res, next) => {
       pageTitle: "Edit your Home",
       currentPage: "host-homes",
       editing: editing,
-      isLoggedIn: req.session.isLoggedIn,
+      isLoggedIn: req.isLoggedIn, 
+      user: req.session.user,
     });
   });
 };
@@ -37,13 +38,14 @@ exports.getHostHomes = (req, res, next) => {
       registeredHomes: registeredHomes,
       pageTitle: "Host Homes List",
       currentPage: "host-homes",
-      isLoggedIn: req.session.isLoggedIn,
+      isLoggedIn: req.isLoggedIn, 
+      user: req.session.user,
     });
   });
 };
 
 exports.postAddHome = (req, res, next) => {
-  const { houseName, price, location, rating, photoUrl, description, id } =
+  const { houseName, price, location, rating, photoUrl, description } =
     req.body;
   const home = new Home({
     houseName,
@@ -52,10 +54,9 @@ exports.postAddHome = (req, res, next) => {
     rating,
     photoUrl,
     description,
-    id,
   });
-  home.save().then((result) => {
-    console.log("PostAddHome Result ", result);
+  home.save().then(() => {
+    console.log("Home Saved successfully");
   });
 
   res.redirect("/host/host-home-list");
@@ -64,29 +65,22 @@ exports.postAddHome = (req, res, next) => {
 exports.postEditHome = (req, res, next) => {
   const { id, houseName, price, location, rating, photoUrl, description } =
     req.body;
-  Home.findById(id)
-    .then((home) => {
-      home.houseName = houseName;
-      home.price = price;
-      home.location = location;
-      home.rating = rating;
-      home.photoUrl = photoUrl;
-      home.description = description;
-      home
-        .save()
-        .then((result) => {
-          console.log("Update Result Post Edit Home: ", result);
-        })
-        .catch((err) => {
-          console.log("Error while updating ", err);
-        })
-        .finally(() => {
-          res.redirect("/host/host-home-list");
-        });
+  Home.findById(id).then((home) => {
+    home.houseName = houseName;
+    home.price = price;
+    home.location = location;
+    home.rating = rating;
+    home.photoUrl = photoUrl;
+    home.description = description;
+    home.save().then((result) => {
+      console.log("Home updated ", result);
+    }).catch(err => {
+      console.log("Error while updating ", err);
     })
-    .catch((err) => {
-      console.log("Error after may not finding the home ", err);
-    });
+    res.redirect("/host/host-home-list");
+  }).catch(err => {
+    console.log("Error while finding home ", err);
+  });
 };
 
 exports.postDeleteHome = (req, res, next) => {
